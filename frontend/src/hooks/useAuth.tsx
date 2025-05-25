@@ -1,7 +1,9 @@
+"use client"; // Mark this module as a Client Component module
+
+import React, { useState, useEffect, createContext, useContext, ReactNode } from 'react';
+
 // This is a placeholder for the useAuth hook.
 // In a real application, this would likely connect to a Context or a state management library (like Zustand, Redux).
-
-import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 
 // Define a basic user type, expand as needed
 export interface AuthUser {
