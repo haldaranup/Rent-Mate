@@ -274,114 +274,127 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <main className="bg-card/30 dark:bg-muted/10 p-4 sm:p-6 rounded-xl shadow-sm flex flex-col gap-6 md:gap-8">
-        {/* Household Info Card - Full Width on Top */}
-        {currentUser.household && (
-          <Card className="shadow-md hover:shadow-lg transition-shadow w-full">
-            <CardHeader className="flex flex-row items-start gap-3 space-y-0 pb-3">
-              <Home className="h-6 w-6 text-primary mt-1" />
-              <div>
-                <CardTitle className="text-xl md:text-2xl">{currentUser.household.name}</CardTitle>
-                <CardDescription>Household Overview</CardDescription>
-              </div>
+      <main className="bg-card/30 dark:bg-muted/10 p-4 sm:p-6 rounded-xl flex flex-col gap-6 md:gap-8">
+        {/* Section 1: Household Overview and Navigation Side-by-Side - Enhanced Styling */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 p-4 sm:p-6 bg-muted/30 dark:bg-muted/20 rounded-xl border border-border/60 shadow-md">
+          {/* Household Info Card */}
+          {currentUser.household && (
+            <Card className="shadow-sm hover:shadow-md transition-shadow h-full">
+              <CardHeader className="flex flex-row items-start gap-3 space-y-0 pb-3">
+                <Home className="h-6 w-6 text-primary mt-1" />
+                <div>
+                  <CardTitle className="text-xl md:text-2xl">{currentUser.household.name}</CardTitle>
+                  <CardDescription>Household Overview</CardDescription>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <h3 className="text-md font-semibold mb-2 text-foreground">Members:</h3>
+                {currentUser.household.members && currentUser.household.members.length > 0 ? (
+                  <ul className="space-y-2">
+                    {currentUser.household.members.map((m) => {
+                      // DEBUGGING: Log roles for comparison
+                      console.log("Current User Role:", currentUser.role, "| UserRole.OWNER Enum:", UserRole.OWNER, "| Member Role:", m.role);
+                      console.log("Is Owner?", currentUser.role === UserRole.OWNER);
+                      console.log("Is different user?", m.id !== currentUser.id);
+                      
+                      return (
+                        <li key={m.id} className="flex items-center justify-between gap-2 text-sm p-2 rounded-md bg-secondary/50">
+                          <div className="flex items-center gap-2">
+                            <Users className="h-4 w-4 text-muted-foreground" />
+                            <span className="font-medium text-foreground">{m.name || m.email}</span>
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-semibold">
+                              {m.role}
+                            </span>
+                          </div>
+                          {currentUser.role.toUpperCase() === UserRole.OWNER && m.id !== currentUser.id && (
+                            <AlertDialog open={memberToRemove?.id === m.id} onOpenChange={(open) => !open && setMemberToRemove(null)}>
+                              <AlertDialogTrigger asChild onClick={() => confirmRemoveMember(m)}>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="text-destructive hover:bg-destructive/10 hover:text-destructive-foreground p-1 h-auto"
+                                >
+                                  <UserX className="h-4 w-4" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              {memberToRemove?.id === m.id && (
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Remove {memberToRemove.name || memberToRemove.email}?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Are you sure you want to remove this member from the household? This action cannot be undone.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel onClick={() => setMemberToRemove(null)} disabled={isRemovingMember}>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={executeRemoveMember} disabled={isRemovingMember} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">
+                                      {isRemovingMember ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />} Remove Member
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              )}
+                            </AlertDialog>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-muted-foreground">No members found in this household.</p>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Navigation Card */}
+          <Card className="shadow-sm hover:shadow-md transition-shadow h-full">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Navigation</CardTitle>
             </CardHeader>
             <CardContent>
-              <h3 className="text-md font-semibold mb-2 text-foreground">Members:</h3>
-              {currentUser.household.members && currentUser.household.members.length > 0 ? (
-                <ul className="space-y-2">
-                  {currentUser.household.members.map((m) => {
-                    // DEBUGGING: Log roles for comparison
-                    console.log("Current User Role:", currentUser.role, "| UserRole.OWNER Enum:", UserRole.OWNER, "| Member Role:", m.role);
-                    console.log("Is Owner?", currentUser.role === UserRole.OWNER);
-                    console.log("Is different user?", m.id !== currentUser.id);
-                    
-                    return (
-                      <li key={m.id} className="flex items-center justify-between gap-2 text-sm p-2 rounded-md bg-secondary/50">
-                        <div className="flex items-center gap-2">
-                          <Users className="h-4 w-4 text-muted-foreground" />
-                          <span className="font-medium text-foreground">{m.name || m.email}</span>
-                          <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-semibold">
-                            {m.role}
-                          </span>
-                        </div>
-                        {currentUser.role.toUpperCase() === UserRole.OWNER && m.id !== currentUser.id && (
-                          <AlertDialog open={memberToRemove?.id === m.id} onOpenChange={(open) => !open && setMemberToRemove(null)}>
-                            <AlertDialogTrigger asChild onClick={() => confirmRemoveMember(m)}>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                className="text-destructive hover:bg-destructive/10 hover:text-destructive-foreground p-1 h-auto"
-                              >
-                                <UserX className="h-4 w-4" />
-                              </Button>
-                            </AlertDialogTrigger>
-                            {memberToRemove?.id === m.id && (
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>Remove {memberToRemove.name || memberToRemove.email}?</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    Are you sure you want to remove this member from the household? This action cannot be undone.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel onClick={() => setMemberToRemove(null)} disabled={isRemovingMember}>Cancel</AlertDialogCancel>
-                                  <AlertDialogAction onClick={executeRemoveMember} disabled={isRemovingMember} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">
-                                    {isRemovingMember ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />} Remove Member
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            )}
-                          </AlertDialog>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ul>
-              ) : (
-                <p className="text-sm text-muted-foreground">No members found in this household.</p>
-              )}
-              {currentUser && currentUser.household && (
-                <InviteMemberForm 
-                  householdId={currentUser.household.id} 
-                  currentUser={currentUser} 
-                  onInvitationSent={fetchUserProfile}
-                />
-              )}
+              <div className="text-2xl font-bold">Explore</div>
+              <p className="text-xs text-muted-foreground">
+                Manage your household effectively.
+              </p>
+              <div className="mt-4 flex flex-col sm:flex-row gap-2">
+                  <Button asChild className="w-full sm:w-auto">
+                      <Link href="/finances">
+                          <IndianRupee className="mr-2 h-4 w-4" /> View Finances
+                      </Link>
+                  </Button>
+                  <Button asChild className="w-full sm:w-auto" variant="outline">
+                      <Link href="/activity-log">
+                          <ListChecks className="mr-2 h-4 w-4" /> Activity Log
+                      </Link>
+                  </Button>
+                  <Button asChild className="w-full sm:w-auto" variant="outline">
+                      <Link href="/calendar">
+                          <CalendarDays className="mr-2 h-4 w-4" /> View Calendar
+                      </Link>
+                  </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Section 2: Invite Panel - Full width below, visible if user is owner */}
+        {currentUser.household && currentUser.role.toUpperCase() === UserRole.OWNER && (
+          <Card className="shadow-md hover:shadow-lg transition-shadow w-full">
+            <CardHeader>
+              <CardTitle className="text-xl md:text-2xl">Invite Members</CardTitle>
+              <CardDescription>Expand your household by sending invitations.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <InviteMemberForm 
+                householdId={currentUser.household.id} 
+                currentUser={currentUser} 
+                onInvitationSent={fetchUserProfile}
+              />
             </CardContent>
           </Card>
         )}
 
-        {/* Navigation Card - Moved here */}
-        <Card className="shadow-md hover:shadow-lg transition-shadow w-full">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Navigation</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">Explore</div>
-            <p className="text-xs text-muted-foreground">
-              Manage your household effectively.
-            </p>
-            <div className="mt-4 flex flex-col sm:flex-row gap-2">
-                <Button asChild className="w-full sm:w-auto">
-                    <Link href="/finances">
-                        <IndianRupee className="mr-2 h-4 w-4" /> View Finances
-                    </Link>
-                </Button>
-                <Button asChild className="w-full sm:w-auto" variant="outline">
-                    <Link href="/activity-log">
-                        <ListChecks className="mr-2 h-4 w-4" /> Activity Log
-                    </Link>
-                </Button>
-                <Button asChild className="w-full sm:w-auto" variant="outline">
-                    <Link href="/calendar">
-                        <CalendarDays className="mr-2 h-4 w-4" /> View Calendar
-                    </Link>
-                </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Chores and Expenses Sections - Grid layout */}
+        {/* Section 3: Chores and Expenses Sections - Grid layout */}
         {currentUser.household && (
              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
                 <ChoresSection

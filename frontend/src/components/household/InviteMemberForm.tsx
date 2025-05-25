@@ -49,7 +49,11 @@ export function InviteMemberForm({ householdId, currentUser, onInvitationSent }:
   });
   const { formState: { isSubmitting: isSubmittingEmail } } = emailForm;
 
-  if (currentUser.role !== UserRole.OWNER) {
+  // Ensure consistent role checking, frontend UserRole enum is uppercase.
+  // Backend might send lowercase, so convert to uppercase for comparison.
+  const effectiveUserRole = currentUser.role?.toUpperCase();
+
+  if (effectiveUserRole !== UserRole.OWNER) {
     return null;
   }
 
