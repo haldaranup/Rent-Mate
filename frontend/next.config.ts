@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
         // and you want to proxy /auth/login to http://backend:3001/api/auth/login,
         // then the destination should be process.env.NEXT_PUBLIC_API_BASE_URL + '/auth/:path*'
         // For a simpler local setup, assuming backend is at http://localhost:3001 and handles /auth routes directly:
-        destination: `${process.env.BACKEND_URL || 'http://localhost:3001'}/auth/:path*`,
+        destination: `${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001'}/auth/:path*`,
       },
       // You can add more rewrite rules here for other backend services if needed
     ];
