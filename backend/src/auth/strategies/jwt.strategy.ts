@@ -45,4 +45,4 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     return result;
     // The returned object will be attached to the request object as request.user
   }
-} 
+}

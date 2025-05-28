@@ -8,4 +8,4 @@ export class CreateInvitationDto {
   @IsUUID()
   @IsNotEmpty()
   readonly householdId: string;
-} 
+}

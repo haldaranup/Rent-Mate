@@ -3,4 +3,4 @@ import { User } from '../../users/entities/user.entity'; // Adjust path as neede
 
 export interface AuthenticatedRequestWithUser extends Request {
   user: User;
-} 
+}

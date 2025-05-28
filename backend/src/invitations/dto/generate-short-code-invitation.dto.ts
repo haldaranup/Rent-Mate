@@ -4,4 +4,4 @@ export class GenerateShortCodeInvitationDto {
   @IsUUID()
   @IsNotEmpty()
   readonly householdId: string;
-} 
+}

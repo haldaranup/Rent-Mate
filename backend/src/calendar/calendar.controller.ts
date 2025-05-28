@@ -1,9 +1,24 @@
-import { Controller, Get, Query, UseGuards, Req, ForbiddenException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Query,
+  UseGuards,
+  Req,
+  ForbiddenException,
+} from '@nestjs/common';
 import { CalendarService } from './calendar.service';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthenticatedRequestWithUser } from '../auth/interfaces/auth.interface';
 import { CalendarEventDto } from './dto';
-import { ApiTags, ApiOperation, ApiOkResponse, ApiBearerAuth, ApiQuery, ApiForbiddenResponse, ApiBadRequestResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiOkResponse,
+  ApiBearerAuth,
+  ApiQuery,
+  ApiForbiddenResponse,
+  ApiBadRequestResponse,
+} from '@nestjs/swagger';
 import { User } from '../users/entities/user.entity';
 
 @ApiTags('Calendar')
@@ -15,27 +30,35 @@ export class CalendarController {
 
   @Get('events')
   @ApiOperation({
-    summary: 'Get calendar events for the current user\'s household',
-    description: 'Retrieves chores and expenses formatted as calendar events for a given date range.',
+    summary: "Get calendar events for the current user's household",
+    description:
+      'Retrieves chores and expenses formatted as calendar events for a given date range.',
   })
   @ApiQuery({
     name: 'startDate',
     required: true,
-    description: 'Start date of the range (ISO 8601 format, e.g., 2024-07-01T00:00:00.000Z)',
+    description:
+      'Start date of the range (ISO 8601 format, e.g., 2024-07-01T00:00:00.000Z)',
     type: String,
   })
   @ApiQuery({
     name: 'endDate',
     required: true,
-    description: 'End date of the range (ISO 8601 format, e.g., 2024-07-31T23:59:59.999Z)',
+    description:
+      'End date of the range (ISO 8601 format, e.g., 2024-07-31T23:59:59.999Z)',
     type: String,
   })
   @ApiOkResponse({
     description: 'Successfully retrieved calendar events.',
     type: [CalendarEventDto],
   })
-  @ApiForbiddenResponse({ description: 'User not part of a household or trying to access another household\'s data.' })
-  @ApiBadRequestResponse({ description: 'Invalid date format for startDate or endDate.' })
+  @ApiForbiddenResponse({
+    description:
+      "User not part of a household or trying to access another household's data.",
+  })
+  @ApiBadRequestResponse({
+    description: 'Invalid date format for startDate or endDate.',
+  })
   async getHouseholdCalendarEvents(
     @Req() req: AuthenticatedRequestWithUser,
     @Query('startDate') startDate: string,
@@ -53,4 +76,4 @@ export class CalendarController {
       user,
     );
   }
-} 
+}

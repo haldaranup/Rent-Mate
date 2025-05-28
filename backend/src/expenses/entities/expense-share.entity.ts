@@ -1,4 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Index, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  Index,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Expense } from './expense.entity';
 import { User } from '../../users/entities/user.entity';
 
@@ -7,7 +16,9 @@ export class ExpenseShare {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Expense, (expense) => expense.shares, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Expense, (expense) => expense.shares, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'expenseId' })
   expense: Expense;
 
@@ -37,4 +48,4 @@ export class ExpenseShare {
 
   @UpdateDateColumn()
   updatedAt: Date;
-} 
+}

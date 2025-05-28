@@ -14,4 +14,4 @@ import { AuthModule } from '../auth/auth.module'; // For guards or user info if 
   controllers: [CalendarController],
   providers: [CalendarService],
 })
-export class CalendarModule {} 
+export class CalendarModule {}

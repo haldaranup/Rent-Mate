@@ -7,7 +7,6 @@ import {
   HttpCode,
   HttpStatus,
   Get,
-  Query,
   Param,
   Logger,
   HttpException,
@@ -54,14 +53,15 @@ export class InvitationsController {
     this.logger.log(
       `User ${invitingUser.id} attempting to generate SHORT CODE for household ${generateDto.householdId}`,
     );
-    const invitation = await this.invitationsService.createHouseholdShortCodeInvitation(
-      generateDto.householdId,
-      invitingUser,
-    );
-    return { 
-      shortCode: invitation.shortCode, 
+    const invitation =
+      await this.invitationsService.createHouseholdShortCodeInvitation(
+        generateDto.householdId,
+        invitingUser,
+      );
+    return {
+      shortCode: invitation.shortCode,
       expiresAt: invitation.expiresAt,
-      householdId: invitation.householdId
+      householdId: invitation.householdId,
     };
   }
 
@@ -95,7 +95,7 @@ export class InvitationsController {
     );
     return this.invitationsService.acceptInvitationByShortCode(
       joinByCodeDto.shortCode,
-      acceptingUser, 
+      acceptingUser,
     );
   }
 
@@ -128,10 +128,11 @@ export class InvitationsController {
     this.logger.log(
       `User ${cancellingUser.id} attempting to CANCEL invitation ${invitationId}`,
     );
-    const updatedInvitation = await this.invitationsService.cancelSentInvitation(
-      invitationId,
-      cancellingUser,
-    );
+    const updatedInvitation =
+      await this.invitationsService.cancelSentInvitation(
+        invitationId,
+        cancellingUser,
+      );
     return updatedInvitation; // Or a simpler success message
   }
 
@@ -141,8 +142,13 @@ export class InvitationsController {
   async getPendingInvitationsForMyHousehold(@Req() req: any) {
     const requestingUser = req.user as User;
     if (!requestingUser.householdId) {
-      this.logger.warn(`User ${requestingUser.id} attempting to fetch pending invites without being in a household.`);
-      throw new HttpException('You must be part of a household to view its pending invitations', HttpStatus.BAD_REQUEST);
+      this.logger.warn(
+        `User ${requestingUser.id} attempting to fetch pending invites without being in a household.`,
+      );
+      throw new HttpException(
+        'You must be part of a household to view its pending invitations',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     this.logger.log(
       `User ${requestingUser.id} fetching PENDING invitations for their household ${requestingUser.householdId}`,
@@ -161,7 +167,7 @@ export class InvitationsController {
     if (!invitation || !invitation.email) {
       throw new HttpException(
         'Email-based invitation not found or token is invalid for this type of lookup',
-         HttpStatus.NOT_FOUND
+        HttpStatus.NOT_FOUND,
       );
     }
     return {
@@ -174,11 +180,10 @@ export class InvitationsController {
 
   @Get('details-by-code/:shortCode')
   @HttpCode(HttpStatus.OK)
-  async getInvitationDetailsByShortCode(
-      @Param('shortCode') shortCode: string
-    ) {
+  async getInvitationDetailsByShortCode(@Param('shortCode') shortCode: string) {
     this.logger.log(`Fetching details for short code ${shortCode}`);
-    const invitationDetails = await this.invitationsService.getInvitationDetailsByShortCode(shortCode);
+    const invitationDetails =
+      await this.invitationsService.getInvitationDetailsByShortCode(shortCode);
     return invitationDetails;
   }
 }

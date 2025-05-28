@@ -1,9 +1,26 @@
-import { Controller, Get, Query, UseGuards, Req, ParseIntPipe, DefaultValuePipe, ForbiddenException, Logger } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Query,
+  UseGuards,
+  Req,
+  ParseIntPipe,
+  DefaultValuePipe,
+  ForbiddenException,
+  Logger,
+} from '@nestjs/common';
 import { ActivityLogService } from './activity-log.service';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthenticatedRequestWithUser } from '../auth/interfaces/auth.interface';
 import { ActivityLogDto, PaginatedActivityLogResponseDto } from './dto';
-import { ApiTags, ApiOperation, ApiOkResponse, ApiBearerAuth, ApiQuery, ApiForbiddenResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiOkResponse,
+  ApiBearerAuth,
+  ApiQuery,
+  ApiForbiddenResponse,
+} from '@nestjs/swagger';
 import { User } from '../users/entities/user.entity';
 
 @ApiTags('Activity Log')
@@ -15,8 +32,9 @@ export class ActivityLogController {
 
   @Get()
   @ApiOperation({
-    summary: 'Get activity logs for the current user\'s household',
-    description: 'Retrieves a paginated list of activity logs for the household the authenticated user belongs to.',
+    summary: "Get activity logs for the current user's household",
+    description:
+      'Retrieves a paginated list of activity logs for the household the authenticated user belongs to.',
   })
   @ApiQuery({
     name: 'page',
@@ -52,4 +70,4 @@ export class ActivityLogController {
       limit,
     );
   }
-} 
+}

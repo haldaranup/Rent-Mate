@@ -11,4 +11,4 @@ import { ActivityLogController } from './activity-log.controller';
   providers: [ActivityLogService],
   exports: [ActivityLogService], // Export service to be used in other modules
 })
-export class ActivityLogModule {} 
+export class ActivityLogModule {}

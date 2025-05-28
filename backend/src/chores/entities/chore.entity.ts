@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Household } from '../../households/entities/household.entity';
 import { User } from '../../users/entities/user.entity';
 
@@ -35,24 +43,37 @@ export class Chore {
   })
   recurrence: ChoreRecurrence;
 
-  @CreateDateColumn({ type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP' })
+  @CreateDateColumn({
+    type: 'timestamp with time zone',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   createdAt: Date;
 
-  @UpdateDateColumn({ type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+  @UpdateDateColumn({
+    type: 'timestamp with time zone',
+    default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
+  })
   updatedAt: Date;
 
   // --- Relations ---
   @Column({ type: 'uuid' })
   householdId: string;
 
-  @ManyToOne(() => Household, household => household.chores, { onDelete: 'CASCADE', nullable: false })
+  @ManyToOne(() => Household, (household) => household.chores, {
+    onDelete: 'CASCADE',
+    nullable: false,
+  })
   @JoinColumn({ name: 'householdId' })
   household: Household;
 
   @Column({ type: 'uuid', nullable: true })
   assignedToId: string | null; // Standardized name
 
-  @ManyToOne(() => User, user => user.assignedChores, { nullable: true, onDelete: 'SET NULL' })
+  @ManyToOne(() => User, (user) => user.assignedChores, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
   @JoinColumn({ name: 'assignedToId' }) // Standardized name for join column
   assignedTo: User | null;
 
@@ -67,4 +88,4 @@ export class Chore {
   completedAt: Date | null; // When it was marked complete
 
   // createdById is removed for now, can be added if specific tracking is needed beyond audit logs or JWT user context
-} 
+}

@@ -1,4 +1,17 @@
-import { Controller, Post, Body, UseGuards, Request, HttpCode, HttpStatus, ValidationPipe, UnauthorizedException, Delete, Param, Logger } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Request,
+  HttpCode,
+  HttpStatus,
+  ValidationPipe,
+  UnauthorizedException,
+  Delete,
+  Param,
+  Logger,
+} from '@nestjs/common';
 import { HouseholdsService } from './households.service';
 import { CreateHouseholdDto } from './dto/create-household.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -18,11 +31,12 @@ export class HouseholdsController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) createHouseholdDto: CreateHouseholdDto,
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    createHouseholdDto: CreateHouseholdDto,
     @Request() req: any, // Using any for now, ideally create a typed request object
   ) {
     const partialUser = req.user as Omit<User, 'password'> & { id: string }; // Ensure id is present
-    
+
     // Fetch the full user entity to ensure we have a complete User instance for ORM operations
     const creatingUser = await this.usersService.findOneById(partialUser.id);
 
@@ -30,7 +44,7 @@ export class HouseholdsController {
       // This should not happen if JWT is valid and user exists, but good for robustness
       throw new UnauthorizedException('User not found from token.');
     }
-    
+
     return this.householdsService.create(createHouseholdDto, creatingUser);
   }
 
@@ -43,17 +57,23 @@ export class HouseholdsController {
     const requestingUser = req.user as User; // User from JWT
 
     if (!requestingUser.householdId) {
-      this.logger.warn(`User ${requestingUser.id} (not in a household) attempted to remove member ${memberUserIdToRemove}.`);
-      throw new UnauthorizedException('You must be part of a household to manage its members.');
+      this.logger.warn(
+        `User ${requestingUser.id} (not in a household) attempted to remove member ${memberUserIdToRemove}.`,
+      );
+      throw new UnauthorizedException(
+        'You must be part of a household to manage its members.',
+      );
     }
-    
-    this.logger.log(`User ${requestingUser.id} (owner of household ${requestingUser.householdId}) attempting to remove member ${memberUserIdToRemove}.`);
+
+    this.logger.log(
+      `User ${requestingUser.id} (owner of household ${requestingUser.householdId}) attempting to remove member ${memberUserIdToRemove}.`,
+    );
 
     await this.householdsService.removeMemberFromHousehold(
-      requestingUser.householdId, 
-      memberUserIdToRemove, 
+      requestingUser.householdId,
+      memberUserIdToRemove,
       requestingUser,
     );
     // No content to return on successful deletion
   }
-} 
+}

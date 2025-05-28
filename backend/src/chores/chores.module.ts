@@ -16,6 +16,6 @@ import { HouseholdsModule } from '../households/households.module';
   ],
   controllers: [ChoresController],
   providers: [ChoresService],
-  exports: [ChoresService, TypeOrmModule] // Export service if other modules need to inject it directly
+  exports: [ChoresService, TypeOrmModule], // Export service if other modules need to inject it directly
 })
 export class ChoresModule {}

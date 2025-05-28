@@ -1,10 +1,18 @@
-import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between } from 'typeorm';
 import { Chore } from '../chores/entities/chore.entity';
 import { Expense } from '../expenses/entities/expense.entity';
 import { User } from '../users/entities/user.entity';
-import { CalendarEventDto, CalendarEventType, CalendarEventExtendedPropsDto } from './dto';
+import {
+  CalendarEventDto,
+  CalendarEventType,
+  CalendarEventExtendedPropsDto,
+} from './dto';
 import { isValid, parseISO, formatISO } from 'date-fns';
 
 @Injectable()
@@ -23,7 +31,9 @@ export class CalendarService {
     requestingUser: User,
   ): Promise<CalendarEventDto[]> {
     if (requestingUser.householdId !== householdId) {
-      throw new UnauthorizedException('Cannot fetch calendar events for another household.');
+      throw new UnauthorizedException(
+        'Cannot fetch calendar events for another household.',
+      );
     }
 
     const startDate = parseISO(startDateStr);
@@ -47,7 +57,7 @@ export class CalendarService {
       where: {
         householdId,
         // This line assumes 'date' in Expense entity is of type Date for Between to work correctly with Date objects.
-        // If 'date' is string, this might need conversion of startDate/endDate to string, 
+        // If 'date' is string, this might need conversion of startDate/endDate to string,
         // or better, fix the entity to use Date type for the 'date' field.
         date: Between(startDate, endDate) as any, // Using 'as any' to bypass strict type check temporarily, review Expense.date type.
       },
@@ -56,8 +66,9 @@ export class CalendarService {
 
     const calendarEvents: CalendarEventDto[] = [];
 
-    chores.forEach(chore => {
-      if (chore.dueDate) { // Ensure dueDate is not null
+    chores.forEach((chore) => {
+      if (chore.dueDate) {
+        // Ensure dueDate is not null
         const extendedProps: CalendarEventExtendedPropsDto = {
           choreId: chore.id,
           description: chore.description,
@@ -68,8 +79,8 @@ export class CalendarService {
           id: `chore-${chore.id}`,
           title: chore.description || 'Chore',
           start: formatISO(chore.dueDate), // Use formatISO for safety
-          end: formatISO(chore.dueDate),   // Use formatISO for safety
-          allDay: true, 
+          end: formatISO(chore.dueDate), // Use formatISO for safety
+          allDay: true,
           type: CalendarEventType.CHORE,
           color: chore.isComplete ? '#A0AEC0' : '#4299E1', // Gray for completed, Blue for pending
           extendedProps,
@@ -77,7 +88,7 @@ export class CalendarService {
       }
     });
 
-    expenses.forEach(expense => {
+    expenses.forEach((expense) => {
       const extendedProps: CalendarEventExtendedPropsDto = {
         expenseId: expense.id,
         description: expense.description,
@@ -88,7 +99,7 @@ export class CalendarService {
         id: `expense-${expense.id}`,
         title: expense.description || 'Expense',
         start: formatISO(expense.date), // Use formatISO
-        end: formatISO(expense.date),   // Use formatISO
+        end: formatISO(expense.date), // Use formatISO
         allDay: true,
         type: CalendarEventType.EXPENSE,
         color: '#48BB78', // Green for expenses
@@ -98,4 +109,4 @@ export class CalendarService {
 
     return calendarEvents;
   }
-} 
+}

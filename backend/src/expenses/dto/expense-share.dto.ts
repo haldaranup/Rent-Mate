@@ -9,4 +9,4 @@ export class ExpenseShareDto {
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0.01)
   amountOwed: number;
-} 
+}

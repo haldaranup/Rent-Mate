@@ -1,4 +1,13 @@
-import { IsString, IsOptional, IsDateString, IsUUID, IsBoolean, MinLength, MaxLength, IsEnum } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsDateString,
+  IsUUID,
+  IsBoolean,
+  MinLength,
+  MaxLength,
+  IsEnum,
+} from 'class-validator';
 import { ChoreRecurrence } from '../entities/chore.entity'; // Import enum
 
 export class UpdateChoreDto {
@@ -34,6 +43,6 @@ export class UpdateChoreDto {
   @IsOptional()
   @IsEnum(ChoreRecurrence)
   recurrence?: ChoreRecurrence;
-  
+
   // completedById and completedAt will be set by the service when isComplete is toggled to true
-} 
+}

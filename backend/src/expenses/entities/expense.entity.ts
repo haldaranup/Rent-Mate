@@ -1,4 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany, Index } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+  Index,
+} from 'typeorm';
 import { Household } from '../../households/entities/household.entity';
 import { User } from '../../users/entities/user.entity';
 import { ExpenseShare } from './expense-share.entity';
@@ -17,7 +27,9 @@ export class Expense {
   @Column({ type: 'date' })
   date: string; // Store as YYYY-MM-DD string
 
-  @ManyToOne(() => Household, (household) => household.expenses, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Household, (household) => household.expenses, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'householdId' })
   household: Household;
 
@@ -32,7 +44,7 @@ export class Expense {
   @Index()
   @Column({ nullable: true })
   paidById: string | null;
-  
+
   @OneToMany(() => ExpenseShare, (share) => share.expense, { cascade: true })
   shares: ExpenseShare[];
 
@@ -41,4 +53,4 @@ export class Expense {
 
   @UpdateDateColumn()
   updatedAt: Date;
-} 
+}

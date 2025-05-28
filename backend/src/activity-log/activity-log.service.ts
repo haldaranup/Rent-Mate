@@ -2,7 +2,12 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ActivityLog, ActivityType } from './entities/activity-log.entity';
-import { CreateActivityLogDto, ActivityLogDto, ActorDto, PaginatedActivityLogResponseDto } from './dto';
+import {
+  CreateActivityLogDto,
+  ActivityLogDto,
+  ActorDto,
+  PaginatedActivityLogResponseDto,
+} from './dto';
 
 @Injectable()
 export class ActivityLogService {
@@ -13,9 +18,7 @@ export class ActivityLogService {
     private activityLogRepository: Repository<ActivityLog>,
   ) {}
 
-  async createLogEntry(
-    data: CreateActivityLogDto,
-  ): Promise<ActivityLog> {
+  async createLogEntry(data: CreateActivityLogDto): Promise<ActivityLog> {
     try {
       const newLog = this.activityLogRepository.create({
         householdId: data.householdId,
@@ -38,9 +41,9 @@ export class ActivityLogService {
   }
 
   async getActivityLogsForHousehold(
-    householdId: string, 
-    page: number = 1, 
-    limit: number = 20
+    householdId: string,
+    page: number = 1,
+    limit: number = 20,
   ): Promise<PaginatedActivityLogResponseDto> {
     const skip = (page - 1) * limit;
     const [logs, total] = await this.activityLogRepository.findAndCount({
@@ -52,7 +55,7 @@ export class ActivityLogService {
     });
 
     return {
-      logs: logs.map(log => this.mapToDto(log)),
+      logs: logs.map((log) => this.mapToDto(log)),
       total,
       page,
       limit,
@@ -63,21 +66,21 @@ export class ActivityLogService {
   private mapToDto(log: ActivityLog): ActivityLogDto {
     let actorDto: ActorDto | null = null;
     if (log.actor) {
-        actorDto = {
-            id: log.actor.id,
-            name: log.actor.name || log.actor.email,
-        };
+      actorDto = {
+        id: log.actor.id,
+        name: log.actor.name || log.actor.email,
+      };
     }
 
     return {
-        id: log.id,
-        householdId: log.householdId,
-        actor: actorDto,
-        entityId: log.entityId,
-        entityType: log.entityType,
-        activityType: log.activityType,
-        details: log.details,
-        createdAt: log.createdAt,
+      id: log.id,
+      householdId: log.householdId,
+      actor: actorDto,
+      entityId: log.entityId,
+      entityType: log.entityType,
+      activityType: log.activityType,
+      details: log.details,
+      createdAt: log.createdAt,
     };
   }
-} 
+}

@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+  ManyToOne,
+} from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Chore } from '../../chores/entities/chore.entity';
 import { Expense } from '../../expenses/entities/expense.entity';
@@ -25,10 +33,12 @@ export class Household {
   expenses: Expense[];
 
   // Relation to Invitations: A household can have many pending/processed invitations
-  @OneToMany(() => Invitation, (invitation) => invitation.household, { cascade: true })
+  @OneToMany(() => Invitation, (invitation) => invitation.household, {
+    cascade: true,
+  })
   invitations: Invitation[];
 
-  // Optional: If you want to explicitly track an owner. 
+  // Optional: If you want to explicitly track an owner.
   // Alternatively, the first user or a user with a specific role can be considered the owner.
   // For now, we can rely on the UserRole.OWNER within the User entity for members of this household.
 
@@ -37,4 +47,4 @@ export class Household {
 
   @UpdateDateColumn()
   updatedAt: Date;
-} 
+}

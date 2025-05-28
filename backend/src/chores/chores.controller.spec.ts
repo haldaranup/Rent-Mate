@@ -6,8 +6,17 @@ import { CreateChoreDto } from './dto/create-chore.dto';
 import { User, UserRole } from '../users/entities/user.entity';
 import { Chore, ChoreRecurrence } from './entities/chore.entity';
 import { AuthGuard } from '@nestjs/passport';
-import { HttpStatus, ForbiddenException, BadRequestException, NotFoundException } from '@nestjs/common';
-import { ArgumentMetadata, ValidationPipe, ParseUUIDPipe } from '@nestjs/common';
+import {
+  HttpStatus,
+  ForbiddenException,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
+import {
+  ArgumentMetadata,
+  ValidationPipe,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import { Household } from '../households/entities/household.entity';
 
 const mockUser: User = {
@@ -66,9 +75,9 @@ describe('ChoresController', () => {
         { provide: UsersService, useValue: mockUsersService },
       ],
     })
-    .overrideGuard(AuthGuard('jwt')) // Mock the guard
-    .useValue({ canActivate: () => true }) // Allow all requests
-    .compile();
+      .overrideGuard(AuthGuard('jwt')) // Mock the guard
+      .useValue({ canActivate: () => true }) // Allow all requests
+      .compile();
 
     controller = module.get<ChoresController>(ChoresController);
     choresService = module.get<ChoresService>(ChoresService);
@@ -99,25 +108,29 @@ describe('ChoresController', () => {
       const result = await controller.create(createChoreDto, mockRequest);
 
       expect(mockUsersService.findOneById).toHaveBeenCalledWith(mockUser.id);
-      expect(mockChoresService.create).toHaveBeenCalledWith(createChoreDto, mockUser);
+      expect(mockChoresService.create).toHaveBeenCalledWith(
+        createChoreDto,
+        mockUser,
+      );
       expect(result).toEqual(mockChore);
     });
 
     it('should throw ForbiddenException if user not found from token', async () => {
       (mockUsersService.findOneById as jest.Mock).mockResolvedValue(null);
 
-      await expect(controller.create(createChoreDto, mockRequest))
-        .rejects.toThrow(ForbiddenException);
+      await expect(
+        controller.create(createChoreDto, mockRequest),
+      ).rejects.toThrow(ForbiddenException);
       expect(mockUsersService.findOneById).toHaveBeenCalledWith(mockUser.id);
       expect(mockChoresService.create).not.toHaveBeenCalled();
     });
-    
+
     // Test for ValidationPipe (basic check, NestJS handles detailed validation)
     // it('should use ValidationPipe for the body', async () => {
     //   const metadata: ArgumentMetadata = { type: 'body', metatype: CreateChoreDto, data: '' };
     //   const validationPipe = new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true });
     //   const invalidDto = { ...createChoreDto, title: null }; // Invalid title
-      
+
     //   try {
     //     await validationPipe.transform(invalidDto as any, metadata);
     //     throw new Error('Transform should have failed for invalid DTO');
@@ -125,7 +138,7 @@ describe('ChoresController', () => {
     //     expect(e).toBeInstanceOf(BadRequestException);
     //     expect(e.getStatus()).toBe(HttpStatus.BAD_REQUEST);
     //   }
-      
+
     //   const validTransformedDto = await validationPipe.transform(createChoreDto, metadata);
     //   expect(validTransformedDto).toEqual(expect.objectContaining(createChoreDto));
     // });
@@ -138,20 +151,29 @@ describe('ChoresController', () => {
     it('should return chores for a household', async () => {
       const choresList = [mockChore, { ...mockChore, id: 'chore-id-def' }];
       (mockUsersService.findOneById as jest.Mock).mockResolvedValue(mockUser);
-      (mockChoresService.findAllByHousehold as jest.Mock).mockResolvedValue(choresList);
+      (mockChoresService.findAllByHousehold as jest.Mock).mockResolvedValue(
+        choresList,
+      );
 
-      const result = await controller.findAllByHousehold(householdId, mockRequest);
+      const result = await controller.findAllByHousehold(
+        householdId,
+        mockRequest,
+      );
 
       expect(mockUsersService.findOneById).toHaveBeenCalledWith(mockUser.id);
-      expect(mockChoresService.findAllByHousehold).toHaveBeenCalledWith(householdId, mockUser);
+      expect(mockChoresService.findAllByHousehold).toHaveBeenCalledWith(
+        householdId,
+        mockUser,
+      );
       expect(result).toEqual(choresList);
     });
 
     it('should throw ForbiddenException if user not found from token', async () => {
       (mockUsersService.findOneById as jest.Mock).mockResolvedValue(null);
 
-      await expect(controller.findAllByHousehold(householdId, mockRequest))
-        .rejects.toThrow(ForbiddenException);
+      await expect(
+        controller.findAllByHousehold(householdId, mockRequest),
+      ).rejects.toThrow(ForbiddenException);
       expect(mockUsersService.findOneById).toHaveBeenCalledWith(mockUser.id);
       expect(mockChoresService.findAllByHousehold).not.toHaveBeenCalled();
     });
@@ -182,42 +204,63 @@ describe('ChoresController', () => {
     const mockRequest = { user: { id: mockUser.id } };
 
     it('should successfully toggle chore completion', async () => {
-      const updatedChore = { ...mockChore, isCompleted: !mockChore.isCompleted };
+      const updatedChore = {
+        ...mockChore,
+        isCompleted: !mockChore.isCompleted,
+      };
       (mockUsersService.findOneById as jest.Mock).mockResolvedValue(mockUser);
-      (mockChoresService.toggleCompletion as jest.Mock).mockResolvedValue(updatedChore);
+      (mockChoresService.toggleCompletion as jest.Mock).mockResolvedValue(
+        updatedChore,
+      );
 
-      const result = await controller.toggleChoreCompletion(choreId, mockRequest);
+      const result = await controller.toggleChoreCompletion(
+        choreId,
+        mockRequest,
+      );
 
       expect(mockUsersService.findOneById).toHaveBeenCalledWith(mockUser.id);
-      expect(mockChoresService.toggleCompletion).toHaveBeenCalledWith(choreId, mockUser);
+      expect(mockChoresService.toggleCompletion).toHaveBeenCalledWith(
+        choreId,
+        mockUser,
+      );
       expect(result).toEqual(updatedChore);
     });
 
     it('should throw ForbiddenException if user not found from token', async () => {
       (mockUsersService.findOneById as jest.Mock).mockResolvedValue(null);
 
-      await expect(controller.toggleChoreCompletion(choreId, mockRequest))
-        .rejects.toThrow(ForbiddenException);
+      await expect(
+        controller.toggleChoreCompletion(choreId, mockRequest),
+      ).rejects.toThrow(ForbiddenException);
       expect(mockChoresService.toggleCompletion).not.toHaveBeenCalled();
     });
 
     it('should propagate exceptions from ChoresService (e.g., NotFoundException)', async () => {
       (mockUsersService.findOneById as jest.Mock).mockResolvedValue(mockUser);
       const errorMessage = `Chore with ID ${choreId} not found.`;
-      (mockChoresService.toggleCompletion as jest.Mock).mockRejectedValue(new NotFoundException(errorMessage));
+      (mockChoresService.toggleCompletion as jest.Mock).mockRejectedValue(
+        new NotFoundException(errorMessage),
+      );
 
-      await expect(controller.toggleChoreCompletion(choreId, mockRequest))
-        .rejects.toThrow(NotFoundException);
-      expect(mockChoresService.toggleCompletion).toHaveBeenCalledWith(choreId, mockUser);
+      await expect(
+        controller.toggleChoreCompletion(choreId, mockRequest),
+      ).rejects.toThrow(NotFoundException);
+      expect(mockChoresService.toggleCompletion).toHaveBeenCalledWith(
+        choreId,
+        mockUser,
+      );
     });
 
-     it('should propagate exceptions from ChoresService (e.g., ForbiddenException for authz)', async () => {
+    it('should propagate exceptions from ChoresService (e.g., ForbiddenException for authz)', async () => {
       (mockUsersService.findOneById as jest.Mock).mockResolvedValue(mockUser);
       const errorMessage = 'You are not authorized to modify this chore.';
-      (mockChoresService.toggleCompletion as jest.Mock).mockRejectedValue(new ForbiddenException(errorMessage));
+      (mockChoresService.toggleCompletion as jest.Mock).mockRejectedValue(
+        new ForbiddenException(errorMessage),
+      );
 
-      await expect(controller.toggleChoreCompletion(choreId, mockRequest))
-        .rejects.toThrow(ForbiddenException);
+      await expect(
+        controller.toggleChoreCompletion(choreId, mockRequest),
+      ).rejects.toThrow(ForbiddenException);
     });
   });
-}); 
+});

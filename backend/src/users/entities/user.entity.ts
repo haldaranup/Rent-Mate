@@ -1,4 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+} from 'typeorm';
 import { Household } from '../../households/entities/household.entity';
 import { Chore } from '../../chores/entities/chore.entity';
 
@@ -30,7 +39,10 @@ export class User {
   role: UserRole;
 
   // Relation to Household: A user belongs to one household (optional for now, a user might not be in a household yet)
-  @ManyToOne(() => Household, (household) => household.members, { nullable: true, onDelete: 'SET NULL' })
+  @ManyToOne(() => Household, (household) => household.members, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
   @JoinColumn({ name: 'householdId' })
   household?: Household | null; // User can be initially null if not part of a household
 
@@ -50,4 +62,4 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt: Date;
-} 
+}

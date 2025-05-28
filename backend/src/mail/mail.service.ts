@@ -35,28 +35,32 @@ export class MailService {
     textContent?: string,
   ): Promise<void> {
     if (!this.mailjetClient) {
-      this.logger.error('Mailjet client is not initialized. Cannot send email.');
+      this.logger.error(
+        'Mailjet client is not initialized. Cannot send email.',
+      );
       throw new Error('Mailjet client not initialized. Check configuration.');
     }
 
-    const request = this.mailjetClient.post('send', { version: 'v3.1' }).request({
-      Messages: [
-        {
-          From: {
-            Email: this.fromEmail,
-            Name: this.fromName,
-          },
-          To: [
-            {
-              Email: to,
+    const request = this.mailjetClient
+      .post('send', { version: 'v3.1' })
+      .request({
+        Messages: [
+          {
+            From: {
+              Email: this.fromEmail,
+              Name: this.fromName,
             },
-          ],
-          Subject: subject,
-          TextPart: textContent || 'Please view this email in HTML format.',
-          HTMLPart: htmlContent,
-        },
-      ],
-    });
+            To: [
+              {
+                Email: to,
+              },
+            ],
+            Subject: subject,
+            TextPart: textContent || 'Please view this email in HTML format.',
+            HTMLPart: htmlContent,
+          },
+        ],
+      });
 
     try {
       const result = await request;
@@ -64,7 +68,11 @@ export class MailService {
       this.logger.debug('Mailjet response:', result.body);
     } catch (err: any) {
       this.logger.error(`Failed to send email to ${to}`, err.stack);
-      this.logger.error('Mailjet error details:', err.ErrorMessage || err.message, err.response?.data);
+      this.logger.error(
+        'Mailjet error details:',
+        err.ErrorMessage || err.message,
+        err.response?.data,
+      );
       throw err;
     }
   }

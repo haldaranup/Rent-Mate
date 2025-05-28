@@ -22,4 +22,4 @@ export class PaginatedActivityLogResponseDto {
 
   @ApiProperty({ example: 5, description: 'Total number of pages.' })
   totalPages: number;
-} 
+}

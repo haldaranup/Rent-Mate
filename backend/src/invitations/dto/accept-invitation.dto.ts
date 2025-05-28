@@ -4,4 +4,4 @@ export class AcceptInvitationDto {
   @IsString()
   @IsNotEmpty()
   readonly token: string;
-} 
+}

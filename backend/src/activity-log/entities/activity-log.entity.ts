@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, Index } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  Index,
+} from 'typeorm';
 import { User } from '../../users/entities/user.entity'; // Assuming path to User entity
 import { Household } from '../../households/entities/household.entity'; // Assuming path to Household entity
 
@@ -69,4 +77,4 @@ export class ActivityLog {
 
   @CreateDateColumn()
   createdAt: Date;
-} 
+}

@@ -1,1 +1,1 @@
-export * from './calendar-event.dto'; 
+export * from './calendar-event.dto';

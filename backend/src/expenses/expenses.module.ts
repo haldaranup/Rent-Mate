@@ -11,7 +11,7 @@ import { UsersModule } from '../users/users.module'; // For user validation
   imports: [
     TypeOrmModule.forFeature([Expense, ExpenseShare]),
     HouseholdsModule, // To use HouseholdsService
-    UsersModule,      // To use UsersService
+    UsersModule, // To use UsersService
   ],
   controllers: [ExpensesController],
   providers: [ExpensesService],

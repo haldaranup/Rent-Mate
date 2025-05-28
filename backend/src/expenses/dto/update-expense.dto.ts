@@ -1,5 +1,14 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsDateString, IsOptional, IsNumber, IsString, IsUUID, Min, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsDateString,
+  IsOptional,
+  IsNumber,
+  IsString,
+  IsUUID,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 import { ExpenseShareDto } from './expense-share.dto';
 
 export class UpdateExpenseDto {
@@ -25,4 +34,4 @@ export class UpdateExpenseDto {
   @ValidateNested({ each: true })
   @Type(() => ExpenseShareDto)
   shares?: ExpenseShareDto[];
-} 
+}

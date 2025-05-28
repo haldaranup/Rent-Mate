@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  NotFoundException,
+} from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -18,25 +22,35 @@ export class AuthService {
     return this.usersService.create(createUserDto);
   }
 
-  async validateUser(email: string, pass: string): Promise<Omit<User, 'password'> | null> {
+  async validateUser(
+    email: string,
+    pass: string,
+  ): Promise<Omit<User, 'password'> | null> {
     const user = await this.usersService.findOneByEmail(email);
     if (user && (await bcrypt.compare(pass, user.password))) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = user;
       return result;
     }
     return null;
   }
 
-  private async generateToken(user: Omit<User, 'password'> | User): Promise<string> {
+  private async generateToken(
+    user: Omit<User, 'password'> | User,
+  ): Promise<string> {
     const payload: JwtPayload = { email: user.email, sub: user.id };
     return this.jwtService.sign(payload);
   }
 
-  async login(loginUserDto: LoginUserDto): Promise<{ accessToken: string; user: Omit<User, 'password'> }> {
+  async login(
+    loginUserDto: LoginUserDto,
+  ): Promise<{ accessToken: string; user: Omit<User, 'password'> }> {
     const user = await this.usersService.findOneByEmail(loginUserDto.email);
 
     if (!user) {
-      throw new NotFoundException(`User with email ${loginUserDto.email} not found.`);
+      throw new NotFoundException(
+        `User with email ${loginUserDto.email} not found.`,
+      );
     }
 
     const isPasswordMatching = await bcrypt.compare(
@@ -48,6 +62,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...userWithoutPassword } = user;
     const accessToken = await this.generateToken(userWithoutPassword);
 
@@ -63,4 +78,4 @@ export class AuthService {
     const { password, ...userWithoutPassword } = user;
     return userWithoutPassword;
   }
-} 
+}

@@ -1,11 +1,36 @@
-import { Controller, Post, Body, Get, Param, Patch, Delete, UseGuards, Request, Query, ValidationPipe, ParseUUIDPipe, HttpCode, HttpStatus, ForbiddenException, Req } from '@nestjs/common';
-import { ExpensesService, UserBalance, SettleUpSuggestion } from './expenses.service';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  Patch,
+  Delete,
+  UseGuards,
+  Request,
+  ValidationPipe,
+  ParseUUIDPipe,
+  HttpCode,
+  HttpStatus,
+  ForbiddenException,
+  Req,
+} from '@nestjs/common';
+import {
+  ExpensesService,
+  UserBalance,
+  SettleUpSuggestion,
+} from './expenses.service';
 import { CreateExpenseDto } from './dto/create-expense.dto';
 import { UpdateExpenseDto } from './dto/update-expense.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthenticatedRequestWithUser } from '../auth/interfaces/auth.interface';
 import { UsersService } from '../users/users.service';
-import { ApiOperation, ApiResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiOkResponse } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+} from '@nestjs/swagger';
 import { User } from '../users/entities/user.entity';
 
 @Controller('expenses')
@@ -19,10 +44,17 @@ export class ExpensesController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true })) createExpenseDto: CreateExpenseDto,
+    @Body(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      }),
+    )
+    createExpenseDto: CreateExpenseDto,
     @Request() req: any,
   ) {
-    const partialUser = req.user as Omit<User, 'password'> & { id: string }; 
+    const partialUser = req.user as Omit<User, 'password'> & { id: string };
     const creatingUser = await this.usersService.findOneById(partialUser.id);
     if (!creatingUser) {
       throw new ForbiddenException('User not found based on token.');
@@ -31,16 +63,16 @@ export class ExpensesController {
   }
 
   @Get()
-  async findAllForCurrentUserHousehold(
-    @Request() req: any,
-  ) {
+  async findAllForCurrentUserHousehold(@Request() req: any) {
     const partialUser = req.user as Omit<User, 'password'> & { id: string };
     const requestingUser = await this.usersService.findOneById(partialUser.id);
     if (!requestingUser) {
       throw new ForbiddenException('User not found based on token.');
     }
     if (!requestingUser.householdId) {
-      throw new ForbiddenException('User does not belong to a household. Cannot fetch expenses.');
+      throw new ForbiddenException(
+        'User does not belong to a household. Cannot fetch expenses.',
+      );
     }
     return this.expensesService.findAllForUserHousehold(requestingUser);
   }
@@ -62,7 +94,14 @@ export class ExpensesController {
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) expenseId: string,
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true })) updateExpenseDto: UpdateExpenseDto,
+    @Body(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      }),
+    )
+    updateExpenseDto: UpdateExpenseDto,
     @Request() req: any,
   ) {
     const partialUser = req.user as Omit<User, 'password'> & { id: string };
@@ -70,7 +109,11 @@ export class ExpensesController {
     if (!requestingUser) {
       throw new ForbiddenException('User not found based on token.');
     }
-    return this.expensesService.update(expenseId, updateExpenseDto, requestingUser);
+    return this.expensesService.update(
+      expenseId,
+      updateExpenseDto,
+      requestingUser,
+    );
   }
 
   @Delete(':id')
@@ -98,7 +141,11 @@ export class ExpensesController {
     if (!requestingUser) {
       throw new ForbiddenException('User not found based on token.');
     }
-    return this.expensesService.toggleExpenseShareSettlement(shareId, true, requestingUser);
+    return this.expensesService.toggleExpenseShareSettlement(
+      shareId,
+      true,
+      requestingUser,
+    );
   }
 
   @Patch('/shares/:shareId/unsettle')
@@ -112,38 +159,72 @@ export class ExpensesController {
     if (!requestingUser) {
       throw new ForbiddenException('User not found based on token.');
     }
-    return this.expensesService.toggleExpenseShareSettlement(shareId, false, requestingUser);
+    return this.expensesService.toggleExpenseShareSettlement(
+      shareId,
+      false,
+      requestingUser,
+    );
   }
 
   @Get('/household/balances')
-  @ApiOperation({ summary: "Get expense balances for the current user's household" })
-  @ApiOkResponse({ 
+  @ApiOperation({
+    summary: "Get expense balances for the current user's household",
+  })
+  @ApiOkResponse({
     description: 'Successfully retrieved household balances.',
     isArray: true,
-    schema: { type: 'array', items: { $ref: '#/components/schemas/UserBalance' } }
+    schema: {
+      type: 'array',
+      items: { $ref: '#/components/schemas/UserBalance' },
+    },
   })
-  @ApiForbiddenResponse({ description: 'Forbidden. User not in a household or trying to access unauthorized data.' })
+  @ApiForbiddenResponse({
+    description:
+      'Forbidden. User not in a household or trying to access unauthorized data.',
+  })
   @ApiNotFoundResponse({ description: 'Household not found.' })
-  async getHouseholdBalances(@Req() req: AuthenticatedRequestWithUser): Promise<UserBalance[]> {
+  async getHouseholdBalances(
+    @Req() req: AuthenticatedRequestWithUser,
+  ): Promise<UserBalance[]> {
     if (!req.user.householdId) {
-        throw new ForbiddenException('User must belong to a household to view balances.');
+      throw new ForbiddenException(
+        'User must belong to a household to view balances.',
+      );
     }
-    return this.expensesService.getHouseholdBalances(req.user.householdId, req.user);
+    return this.expensesService.getHouseholdBalances(
+      req.user.householdId,
+      req.user,
+    );
   }
 
   @Get('/household/settle-up')
-  @ApiOperation({ summary: "Get settle-up suggestions for the current user's household" })
+  @ApiOperation({
+    summary: "Get settle-up suggestions for the current user's household",
+  })
   @ApiOkResponse({
     description: 'Successfully retrieved settle-up suggestions.',
     isArray: true,
-    schema: { type: 'array', items: { $ref: '#/components/schemas/SettleUpSuggestion' } }
+    schema: {
+      type: 'array',
+      items: { $ref: '#/components/schemas/SettleUpSuggestion' },
+    },
   })
-  @ApiForbiddenResponse({ description: 'Forbidden. User not in a household or trying to access unauthorized data.' })
+  @ApiForbiddenResponse({
+    description:
+      'Forbidden. User not in a household or trying to access unauthorized data.',
+  })
   @ApiNotFoundResponse({ description: 'Household not found.' })
-  async getSettleUpSuggestions(@Req() req: AuthenticatedRequestWithUser): Promise<SettleUpSuggestion[]> {
+  async getSettleUpSuggestions(
+    @Req() req: AuthenticatedRequestWithUser,
+  ): Promise<SettleUpSuggestion[]> {
     if (!req.user.householdId) {
-      throw new ForbiddenException('User must belong to a household to get settle-up suggestions.');
+      throw new ForbiddenException(
+        'User must belong to a household to get settle-up suggestions.',
+      );
     }
-    return this.expensesService.getSettleUpSuggestions(req.user.householdId, req.user);
+    return this.expensesService.getSettleUpSuggestions(
+      req.user.householdId,
+      req.user,
+    );
   }
-} 
+}

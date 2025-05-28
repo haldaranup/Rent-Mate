@@ -1,1 +1,1 @@
-export * from './activity-log.entity'; 
+export * from './activity-log.entity';

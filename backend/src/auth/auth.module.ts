@@ -24,12 +24,16 @@ import { JwtStrategy } from './strategies/jwt.strategy';
             expiresIn = expiresInString;
           }
         } else {
-          console.warn('JWT_EXPIRES_IN not found in .env, using default of 1 hour (3600s)');
+          console.warn(
+            'JWT_EXPIRES_IN not found in .env, using default of 1 hour (3600s)',
+          );
         }
-        
+
         const secret = configService.get<string>('JWT_SECRET');
         if (!secret) {
-          throw new Error('JWT_SECRET is not defined in environment variables for JwtModule registration');
+          throw new Error(
+            'JWT_SECRET is not defined in environment variables for JwtModule registration',
+          );
         }
 
         return {

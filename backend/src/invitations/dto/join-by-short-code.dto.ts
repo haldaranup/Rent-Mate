@@ -4,6 +4,8 @@ export class JoinByShortCodeDto {
   @IsString()
   @IsNotEmpty()
   @Length(6, 6) // Assuming SHORT_CODE_LENGTH is 6
-  @Matches(/^[A-Z0-9]+$/, { message: 'Invitation code must be uppercase alphanumeric.' })
+  @Matches(/^[A-Z0-9]+$/, {
+    message: 'Invitation code must be uppercase alphanumeric.',
+  })
   readonly shortCode: string;
-} 
+}

@@ -1,4 +1,13 @@
-import { IsString, IsNotEmpty, IsOptional, IsDateString, IsUUID, MinLength, MaxLength, IsEnum } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsDateString,
+  IsUUID,
+  MinLength,
+  MaxLength,
+  IsEnum,
+} from 'class-validator';
 import { ChoreRecurrence } from '../entities/chore.entity'; // Import enum
 
 export class CreateChoreDto {
@@ -27,4 +36,4 @@ export class CreateChoreDto {
 
   // householdId is removed as it is derived from the authenticated user
   // createdById will be set from the authenticated user in the service
-} 
+}

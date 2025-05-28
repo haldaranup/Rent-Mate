@@ -36,7 +36,7 @@ export class UsersService {
     });
 
     const savedUser = await this.usersRepository.save(newUser);
-    
+
     const { password: _, ...result } = savedUser;
     return result;
   }
@@ -58,4 +58,4 @@ export class UsersService {
   async save(user: User): Promise<User> {
     return this.usersRepository.save(user);
   }
-} 
+}
